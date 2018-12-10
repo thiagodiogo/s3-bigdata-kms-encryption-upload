@@ -1,0 +1,28 @@
+{
+  "Version": "2012-10-17",
+  "Id": "S3IPRestrict-{{BUCKET_NAME}}",
+  "Statement": [
+    {
+      "Sid": "IPAllow",
+      "Effect": "Allow",
+      "Principal": "*",
+      "Action": "s3:*",
+      "Resource": "arn:aws:s3:::{{BUCKET_NAME}}/*",
+      "Condition": {
+         "IpAddress": {"aws:SourceIp": "{{IP_RANGE}}"}
+      }
+    },
+    {
+      "Sid":"DenyUnEncryptedObjectUploads",
+      "Effect":"Deny",
+      "Principal":"*",
+      "Action":"s3:PutObject",
+      "Resource":"arn:aws:s3:::{{BUCKET_NAME}}/*",
+      "Condition":{
+         "StringNotEquals":{
+            "s3:x-amz-server-side-encryption-aws-kms-key-id":"arn:aws:kms:{{REGION}}:{{ACC_ID}}:key/{{KEY_ID}}"
+         }
+      }
+    }
+  ]
+}
